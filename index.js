@@ -78,6 +78,14 @@ const client = new MongoClient(uri, {
     res.send(result)
   })
 
+  app.get('/productcount', async (req, res) => {
+    const search = req.query.search;
+    let query = {
+      productName: { $regex: search, $options: 'i' },
+    }
+    const count = await appliancesCollection.countDocuments(query);
+    res.send({count})
+  })
       // Send a ping to confirm a successful connection
     //   await client.db("admin").command({ ping: 1 });
       console.log("Pinged your deployment. You successfully connected to MongoDB!");
