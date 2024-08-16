@@ -56,10 +56,16 @@ const client = new MongoClient(uri, {
       query.productName = { $regex: search, $options: 'i' }
     }
 
-    // brand categorization 
-    if(brand){
+     // brand categorization 
+     if(brand){
       query = { brand: brand };
     }
+
+    // category categorization 
+    if(category){
+      query = { category: category };
+    }
+
 
     // price range categorization 
     if(priceRange && priceRange === 'below'){
@@ -107,6 +113,7 @@ const client = new MongoClient(uri, {
     const search = req.query.search;
     const priceRange = req.query.priceRange;
     const brand = req.query.brand;
+    const category = req.query.category;
     let query = {};
 
     //search
@@ -125,11 +132,20 @@ const client = new MongoClient(uri, {
       query.price = { $gt: 2000 };
     }
 
-    // brand
-    if(brand){
-      query = { brand: brand };
+      // brand
+      if(brand){
+        query = {brand: brand };
+      }
+  
+
+     // category
+     if(category){
+      query = { category: category };
     }
 
+   
+
+   
     const count = await appliancesCollection.countDocuments(query);
     console.log(count)
     res.send({count})
