@@ -37,6 +37,10 @@ const client = new MongoClient(uri, {
    app.get('/products', async(req,res)=>{
     const search = req.query.search;
     const sort = req.query.sort || '';
+    const brand = req.query.brand || '';
+    const category = req.query.category || '';
+    const priceRange = req.query.priceRange || '';
+
     const page = parseInt(req.query.page);
     let newpage=0;
     if(page===0){
@@ -45,11 +49,28 @@ const client = new MongoClient(uri, {
      newpage=page-1;
     }
     const size = parseInt(req.query.size);
- 
-    let query = {
-      productName: { $regex: search, $options: 'i' },
+    let query = {};
+
+    // search option 
+    if(search){
+      query.productName = { $regex: search, $options: 'i' }
     }
 
+    
+    // price range categorization 
+    if(priceRange && priceRange === 'below'){
+      query.price = { $lt: 1000 };
+    }
+    if(priceRange && priceRange === 'between'){
+      query.price = { $gt: 1000, $lt: 2000 };
+    }
+    if(priceRange && priceRange === 'above'){
+      query.price = { $gt: 2000 };
+    }
+
+    
+
+    // sorting by price and new date 
     let sortOption = {};
       if (sort && sort === 'low') {
         sortOption['price'] = 1;
@@ -80,10 +101,30 @@ const client = new MongoClient(uri, {
 
   app.get('/productcount', async (req, res) => {
     const search = req.query.search;
-    let query = {
-      productName: { $regex: search, $options: 'i' },
+    const priceRange = req.query.priceRange;
+    const brand = req.query.brand;
+    let query = {};
+
+    //search
+    if(search){
+      query.productName = { $regex: search, $options: 'i' }
     }
+
+    //price range
+    if(priceRange && priceRange === 'below'){
+      query.price = { $lt: 1000 };
+    }
+    if(priceRange && priceRange === 'between'){
+      query.price = { $gt: 1000, $lt: 2000 };
+    }
+    if(priceRange && priceRange === 'above'){
+      query.price = { $gt: 2000 };
+    }
+
+    
+
     const count = await appliancesCollection.countDocuments(query);
+    console.log(count)
     res.send({count})
   })
       // Send a ping to confirm a successful connection
