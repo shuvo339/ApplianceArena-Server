@@ -56,7 +56,11 @@ const client = new MongoClient(uri, {
       query.productName = { $regex: search, $options: 'i' }
     }
 
-    
+    // brand categorization 
+    if(brand){
+      query = { brand: brand };
+    }
+
     // price range categorization 
     if(priceRange && priceRange === 'below'){
       query.price = { $lt: 1000 };
@@ -121,7 +125,10 @@ const client = new MongoClient(uri, {
       query.price = { $gt: 2000 };
     }
 
-    
+    // brand
+    if(brand){
+      query = { brand: brand };
+    }
 
     const count = await appliancesCollection.countDocuments(query);
     console.log(count)
